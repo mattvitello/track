@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+model movie {
+    id                String   @id @default(cuid())
+    name              String
+    my_rating         Decimal?
+    my_review         String?  @db.Text
+    poster_image_url  String?  @db.Text
+    letterboxd_url    String
+    release_year      Int
+    watched_at        DateTime       
+    created_at        DateTime @default(now())
+    updated_at        DateTime @updatedAt
+}
