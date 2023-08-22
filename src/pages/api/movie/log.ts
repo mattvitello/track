@@ -8,10 +8,10 @@ import { getHTTPStatusCodeFromError } from "@trpc/server/http";
 
 const LetterboxdMovie = z.object({
   title: z.string(),
-  releaseYear: z.number(),
-  rating: z.number().nullable(),
+  releaseYear: z.string(),
+  rating: z.string().nullable(),
   letterboxdUrl: z.string(),
-  watchedAt: z.date(),
+  watchedAt: z.string(),
   description: z.string(),
 });
 
@@ -26,43 +26,42 @@ const logMovieHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const ctx = createTRPCContext({ req, res });
   const caller = appRouter.createCaller(ctx);
-  const numberOfMovies = await caller.movie.getCount();
 
   try {
     const letterboxdMovie = LetterboxdMovie.parse(req.body);
     const letterboxdId = extractIdFromLetterboxdUrl(letterboxdMovie.letterboxdUrl);
     const existingMovie = await caller.movie.getByLetterboxdId({ letterboxdId });
+    const myRating = letterboxdMovie.rating ? Number(letterboxdMovie.rating) : null;
 
     if (!existingMovie) {
       const moviePosterUrl = extractPosterUrlFromLetterboxdDescription(letterboxdMovie.description);
+      const adjustedMovieUrl = letterboxdMovie.letterboxdUrl.replace(/\/\w+\/film\//, "/film/");
 
       await caller.movie.create({
         title: letterboxdMovie.title,
-        myRating: letterboxdMovie.rating,
+        myRating: myRating,
         posterImageUrl: moviePosterUrl,
-        letterboxdUrl: letterboxdMovie.letterboxdUrl,
-        releaseYear: letterboxdMovie.releaseYear,
-        watchedAt: letterboxdMovie.watchedAt,
+        letterboxdUrl: adjustedMovieUrl,
+        releaseYear: Number(letterboxdMovie.releaseYear),
+        watchedAt: new Date(`${letterboxdMovie.watchedAt}T00:00:00Z`),
         letterboxdId: letterboxdId
       });
     } else {
       await caller.movie.update({
         id: existingMovie.id,
-        myRating: letterboxdMovie.rating,
+        myRating: myRating,
       })
     }
 
-    res.status(200).json({ isSuccess: true });
+    return res.status(200).json("Success");
   } catch (cause) {
+    console.error(cause);
     if (cause instanceof TRPCError) {
       const httpCode = getHTTPStatusCodeFromError(cause);
-      return res.status(httpCode).json(cause);
+      return res.status(httpCode).json({ message: "Unauthorized" });
     }
-    console.error(cause);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-
-  return res.status(200).json({...req.body, numberOfMovies});
 };
 
 const extractIdFromLetterboxdUrl = (url: string): string => {
