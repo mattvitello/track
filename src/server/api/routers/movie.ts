@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  protectedZapierAuthenticatedProcedure,
+} from "~/server/api/trpc";
 
 export const movieRouter = createTRPCRouter({
   getByLetterboxdId: publicProcedure
@@ -26,16 +30,18 @@ export const movieRouter = createTRPCRouter({
     });
   }),
 
-  create: publicProcedure
-    .input(z.object({ 
-      title: z.string(),
-      myRating: z.number().nullable(),
-      posterImageUrl: z.string().nullable(),
-      letterboxdUrl: z.string(),
-      releaseYear: z.number(),
-      watchedAt: z.date(),
-      letterboxdId: z.string() 
-    }))
+  create: protectedZapierAuthenticatedProcedure
+    .input(
+      z.object({
+        title: z.string(),
+        myRating: z.number().nullable(),
+        posterImageUrl: z.string().nullable(),
+        letterboxdUrl: z.string(),
+        releaseYear: z.number(),
+        watchedAt: z.date(),
+        letterboxdId: z.string(),
+      })
+    )
     .query(({ ctx, input }) => {
       return ctx.prisma.movie.create({
         data: {
@@ -46,16 +52,18 @@ export const movieRouter = createTRPCRouter({
           letterboxd_url: input.letterboxdUrl,
           release_year: input.releaseYear,
           watched_at: input.watchedAt,
-          letterboxd_id: input.letterboxdId
-        }
-      })
+          letterboxd_id: input.letterboxdId,
+        },
+      });
     }),
 
-  update: publicProcedure
-    .input(z.object({ 
-      id: z.string(),
-      myRating: z.number().nullable(),
-    }))
+  update: protectedZapierAuthenticatedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        myRating: z.number().nullable(),
+      })
+    )
     .query(({ ctx, input }) => {
       return ctx.prisma.movie.update({
         where: {
