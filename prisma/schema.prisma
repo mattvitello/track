@@ -13,7 +13,7 @@ datasource db {
 
 model movie {
     id                String   @id @default(cuid())
-    name              String
+    title             String
     my_rating         Decimal?
     my_review         String?  @db.Text
     poster_image_url  String?  @db.Text
@@ -22,4 +22,5 @@ model movie {
     watched_at        DateTime       
     created_at        DateTime @default(now())
     updated_at        DateTime @updatedAt
+    letterboxd_id     String   @unique
 }
