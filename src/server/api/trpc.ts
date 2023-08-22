@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -43,8 +43,10 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  const zapierAccessToken = opts.req.headers[`${process.env.ZAPIER_ACCESS_TOKEN_HEADER}`] as string;
+  const isAuthorizedWithZapier = (zapierAccessToken === process.env.ZAPIER_ACCESS_TOKEN);
+  return { ...createInnerTRPCContext({}), isAuthorizedWithZapier };
 };
 
 /**
@@ -85,9 +87,20 @@ export const createTRPCRouter = t.router;
 
 /**
  * Public (unauthenticated) procedure
- *
- * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
- * guarantee that a user querying is authorized, but you can still access user session data if they
- * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+const enforceUserIsAuthedWithZapier = t.middleware(({ ctx, next }) => {
+  if (!ctx.isAuthorizedWithZapier) {
+    throw new TRPCError({ code: "UNAUTHORIZED" })
+  }
+
+  return next({
+    ctx: {},
+  });
+});
+
+/**
+ * Protected (authenticated) procedure
+ */
+export const protectedZapierAuthenticatedProcedure = t.procedure.use(enforceUserIsAuthedWithZapier);
