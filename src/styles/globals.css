@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-highlight, .hover\:bg-highlight:hover {
+  background: #ff6;
+}
