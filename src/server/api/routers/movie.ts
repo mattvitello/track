@@ -30,6 +30,43 @@ export const movieRouter = createTRPCRouter({
     });
   }),
 
+  getAllByMinimumRating: publicProcedure
+    .input(z.object({ rating: z.number() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.movie.findMany({
+        where: {
+          my_rating: {
+            gte: input.rating,
+          },
+        },
+        orderBy: {
+          my_rating: 'desc'
+        }
+      });
+    }),
+
+    getByMinimumRatingAndWatchedYear: publicProcedure
+    .input(z.object({ rating: z.number(), year: z.number() }))
+    .query(({ ctx, input }) => {
+      const startDate = new Date(`${input.year}-01-01T00:00:00Z`);
+      const endDate = new Date(`${input.year + 1}-01-01T00:00:00Z`);
+
+      return ctx.prisma.movie.findMany({
+        where: {
+          my_rating: {
+            gte: input.rating,
+          },
+          watched_at: {
+            gte: startDate,
+            lt: endDate,
+          }
+        },
+        orderBy: {
+          my_rating: 'desc'
+        }
+      });
+    }),
+
   create: protectedZapierAuthenticatedProcedure
     .input(
       z.object({
