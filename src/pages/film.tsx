@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FilmView } from "~/components/filmview";
 import { LoadingPage } from "~/components/loading";
 import { api } from "~/utils/api";
@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 const Films = (props: { year: number | "All" }) => {
   const { year } = props;
   const { data, isLoading: filmsLoading } = getFilmsByYear(year);
+  const films = useMemo(() => data, [data]);
 
   if (filmsLoading) {
     return (
@@ -16,11 +17,11 @@ const Films = (props: { year: number | "All" }) => {
     );
   }
 
-  if (!data) return <div>Something went wrong</div>;
+  if (!films) return <div>Something went wrong</div>;
 
   return (
-    <div className="flex grow flex-col overflow-y-scroll">
-      {data.map((film) => (
+    <div className="container:none grid grid-cols-12 gap-8 overflow-y-scroll pt-12">
+      {films.map((film) => (
         <FilmView {...film} key={film.id} />
       ))}
     </div>
