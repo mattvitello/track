@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 type NavItem = {
   label: string;
@@ -6,6 +7,7 @@ type NavItem = {
 };
 
 const Sidebar = ({}) => {
+  const router = useRouter();
   const navItems: NavItem[] = [
     {
       label: "Film",
@@ -15,15 +17,21 @@ const Sidebar = ({}) => {
       label: "Music",
       url: "/music",
     },
-  ]
+  ];
+
+  const isActive = (url: string) => {
+    return router.pathname === url;
+  }
 
   return (
     <ul className="list-none">
       {navItems.map((item, index) => {
         return (
-          <Link key={index} href={item.url}>
-            <li>{item.label}</li>
-          </Link>
+          <li key={index} className={`font-mono text-md pb-4 ${isActive(item.url) ? 'font-bold line-through' : ''}`}>
+            <Link href={item.url} className="hover:bg-highlight">
+              {item.label}
+            </Link>
+          </li>
         );
       })}
     </ul>
