@@ -2,12 +2,25 @@ import { type NextPage } from "next";
 import { useMemo, useState } from "react";
 import { FilmView } from "~/components/filmview";
 import { LoadingPage } from "~/components/loading";
-import { api } from "~/utils/api";
+import { StarRating } from "~/components/stars";
+import { type RouterOutputs, api } from "~/utils/api";
 
+type Film = RouterOutputs["movie"]["getAllByMinimumRating"][0];
 const Films = (props: { year: number | "All" }) => {
   const { year } = props;
   const { data, isLoading: filmsLoading } = getFilmsByYear(year);
-  const films = useMemo(() => data, [data]);
+  const fiveStarFilms = useMemo(
+    () => data?.filter((film) => Number(film.my_rating) === 5),
+    [data]
+  );
+  const fourAndHalfStarFilms = useMemo(
+    () => data?.filter((film) => Number(film.my_rating) === 4.5),
+    [data]
+  );
+  const fourStarFilms = useMemo(
+    () => data?.filter((film) => Number(film.my_rating) === 4),
+    [data]
+  );
 
   if (filmsLoading) {
     return (
@@ -17,10 +30,43 @@ const Films = (props: { year: number | "All" }) => {
     );
   }
 
-  if (!films) return <div>Something went wrong</div>;
+  if (!data) return <div>Something went wrong</div>;
 
   return (
-    <div className="container:none grid grid-cols-12 gap-8 overflow-y-scroll pt-12">
+    <div>
+      {fiveStarFilms && fiveStarFilms.length > 0 ? (
+        <FilmsByStarRating films={fiveStarFilms} rating={5} className="pt-12" />
+      ) : (
+        ""
+      )}
+      <div className="relative flex py-11 items-center">
+        <div className="flex-grow border-t border-gray-400 opacity-30"></div>
+      </div>
+      {fourAndHalfStarFilms && fourAndHalfStarFilms.length > 0 ? (
+        <FilmsByStarRating films={fourAndHalfStarFilms} rating={4.5} />
+      ) : (
+        ""
+      )}
+      <div className="relative flex py-10 items-center">
+        <div className="flex-grow border-t border-gray-400 opacity-30"></div>
+      </div>
+      {fourStarFilms && fourStarFilms.length > 0 ? (
+        <FilmsByStarRating films={fourStarFilms} rating={4} className="pb-12"/>
+      ) : (
+        ""
+      )}
+    </div>
+  );
+};
+
+const FilmsByStarRating = (props: { films: Film[]; rating: number, className?: string }) => {
+  const { films, rating, className } = props;
+
+  return (
+    <div className={`container:none grid grid-cols-12 gap-8 overflow-y-scroll ${className}`}>
+      <div className="col-span-12 text-2xl opacity-80 mb-4">
+        <StarRating rating={rating} />
+      </div>
       {films.map((film) => (
         <FilmView {...film} key={film.id} />
       ))}
@@ -52,7 +98,7 @@ const FilmPage: NextPage = () => {
           return (
             <li
               key={index}
-              className={`mr-8 inline hover:bg-highlight ${
+              className={`hover:bg-highlight mr-8 inline ${
                 year === selectedYear ? "bg-highlight" : ""
               }`}
             >
