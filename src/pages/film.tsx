@@ -63,8 +63,8 @@ const FilmsByStarRating = (props: { films: Film[]; rating: number, className?: s
   const { films, rating, className } = props;
 
   return (
-    <div className={`container:none grid grid-cols-12 gap-8 overflow-y-scroll ${className}`}>
-      <div className="col-span-12 text-2xl opacity-80 mb-4">
+    <div className={`container:none grid grid-cols-12 gap-y-9 gap-x-4 overflow-y-scroll max-w-4xl ${className}`}>
+      <div className="col-span-12 text-xl md:text-2xl opacity-80 mb-4">
         <StarRating rating={rating} />
       </div>
       {films.map((film) => (

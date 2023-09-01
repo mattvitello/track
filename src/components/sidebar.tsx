@@ -27,7 +27,7 @@ const Sidebar = ({}) => {
     <ul className="list-none">
       {navItems.map((item, index) => {
         return (
-          <li key={index} className={`font-mono text-md pb-4 ${isActive(item.url) ? 'font-bold line-through' : ''}`}>
+          <li key={index} className={`font-mono text-md pb-4 inline mr-8 md:list-item md:mr-0 ${isActive(item.url) ? 'font-bold line-through' : ''}`}>
             <Link href={item.url} className="hover:bg-highlight">
               {item.label}
             </Link>
