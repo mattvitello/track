@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export const PageLayout = (props: PropsWithChildren) => {
   return (
-    <main className="container:none min-h-screen px-4 pt-12 md:grid-cols-12 md:px-16">
+    <main className="container:none min-h-screen px-8 pt-12 md:grid-cols-12 md:px-16">
       <div className="min-h-16 pb-8 md:col-span-12">
           <p className="text-center md:text-left">
             <Link href="/" className="inline-block">

@@ -10,7 +10,7 @@ export const FilmView = (props: Film) => {
     : "/empty-poster.png";
 
   return (
-    <div key={film.id} className="col-span-2">
+    <div key={film.id} className="col-span-4 sm:col-span-3 lg:col-span-2">
       <Link href={film.letterboxd_url} rel="noopener noreferrer" target="_blank">
         <Image
           src={posterImageUrl}
