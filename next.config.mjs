@@ -8,7 +8,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ['ltrbxd.com', 's.ltrbxd.com', 'a.ltrbxd.com'],
+    domains: ['ltrbxd.com', 's.ltrbxd.com', 'a.ltrbxd.com', 'fastly.net', 'lastfm.freetls.fastly.net'],
   },
 };
 
