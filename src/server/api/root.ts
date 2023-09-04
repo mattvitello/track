@@ -1,4 +1,5 @@
 import { movieRouter } from "~/server/api/routers/movie";
+import { musicRouter } from "~/server/api/routers/music";
 import { createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -8,6 +9,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   movie: movieRouter,
+  music: musicRouter
 });
 
 // export type definition of API
