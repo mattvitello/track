@@ -24,3 +24,15 @@ model movie {
     updated_at        DateTime @updatedAt
     letterboxd_id     String   @unique
 }
+
+model album {
+    id                  String  @id @default(cuid())
+    mbid                String? @db.Text
+    name                String
+    artist              String
+    last_fm_url         String  @unique
+    cover_art_image_url String? @db.Text
+    number_of_tracks    Int?    @db.Int
+    created_at          DateTime @default(now())
+    updated_at          DateTime @updatedAt
+}
