@@ -12,6 +12,7 @@
   "dependencies": {
     "@prisma/client": "^5.1.1",
     "@t3-oss/env-nextjs": "^0.3.1",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tanstack/react-query": "^4.29.25",
     "@trpc/client": "^10.34.0",
     "@trpc/next": "^10.34.0",
@@ -22,6 +23,7 @@
     "nextjs-cors": "^2.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.10.1",
     "superjson": "^1.13.1",
     "zod": "^3.21.4"
   },
