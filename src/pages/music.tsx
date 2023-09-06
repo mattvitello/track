@@ -2,6 +2,7 @@ import { type NextPage } from "next/types";
 import { useState } from "react";
 import { LoadingPage } from "~/components/loading";
 import { AlbumView } from "~/components/albumview";
+import { ErrorView } from "~/components/errorview";
 import { api } from "~/utils/api";
 
 const Albums = (props: { year: number | "All" }) => {
@@ -16,10 +17,10 @@ const Albums = (props: { year: number | "All" }) => {
     );
   }
 
-  if (!data) return <div>Something went wrong</div>;
+  if (!data) return <ErrorView />;
 
   return (
-    <div className="container:none grid grid-cols-12 gap-y-9 gap-x-4 overflow-y-scroll max-w-4xl pt-12">
+    <div className="container:none grid grid-cols-12 gap-y-12 gap-x-4 overflow-y-scroll pt-12 pb-12">
       {data.map((album) => (
         <AlbumView {...album} key={album.url} />
       ))}
@@ -29,10 +30,10 @@ const Albums = (props: { year: number | "All" }) => {
 
 const getAlbumsByYear = (year: number | "All") => {
   if (year === "All") {
-    return api.music.getMostListenedToAlbums.useQuery({ limit: 25 });
+    return api.music.getMostListenedToAlbums.useQuery({ limit: 24 });
   } else {
     return api.music.getMostListenedToAlbumsByYear.useQuery({
-      limit: 25,
+      limit: 24,
       year,
     });
   }

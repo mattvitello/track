@@ -5,3 +5,23 @@
 .bg-highlight, .hover\:bg-highlight:hover {
   background: #ff6;
 }
+
+.text-15 {
+  font-size: 15px;
+}
+
+.opacity-88 {
+  opacity: 0.88;
+}
+
+.opacity-56 {
+  opacity: 0.56;
+}
+
+.pt-0005 {
+  padding-top: 0.5px;
+}
+
+.-mt-30px {
+  margin-top: -30px;
+}

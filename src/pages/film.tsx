@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { FilmView } from "~/components/filmview";
 import { LoadingPage } from "~/components/loading";
 import { StarRating } from "~/components/stars";
+import { ErrorView } from "~/components/errorview";
 import { type RouterOutputs, api } from "~/utils/api";
 
 type Film = RouterOutputs["movie"]["getAllByMinimumRating"][0];
@@ -30,7 +31,7 @@ const Films = (props: { year: number | "All" }) => {
     );
   }
 
-  if (!data) return <div>Something went wrong</div>;
+  if (!data) return <ErrorView />;
 
   return (
     <div>

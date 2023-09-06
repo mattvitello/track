@@ -8,19 +8,31 @@ export const AlbumView = (props: Album) => {
   const albumCoverUrl = album.imageUrl ? album.imageUrl : "/empty-poster.png";
 
   return (
-    <div key={album.url} className="col-span-4 sm:col-span-3 lg:col-span-2">
+    <div key={album.url} className="relative col-span-4 sm:col-span-3">
       <Link href={album.url} rel="noopener noreferrer" target="_blank">
         <Image
           src={albumCoverUrl}
-          alt="Cover Art"
-          width={130}
-          height={0}
-          className="-mt-5"
+          alt="Album cover"
+          sizes="100vw"
+          style={{
+            width: "100%",
+            height: "auto",
+          }}
+          width={200}
+          height={200}
         />
       </Link>
-        <p>{album.name}</p>
-        <p>{album.artist}</p>
-        <p>{album.playcount}</p>
+      <div>
+        <p className="opacity-88 line-clamp-1 pt-1 text-xs leading-4 text-black">
+          {album.name}
+        </p>
+        <p className="opacity-56 pt-0005 line-clamp-1 text-xs leading-4 text-black">
+          {album.artist}
+        </p>
+        <p className="opacity-88 pt-0005 opacity-56 text-xs text-black">
+          {album.playcount} Song Plays
+        </p>
+      </div>
     </div>
   );
 };
