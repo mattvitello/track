@@ -67,6 +67,7 @@ export const musicRouter = createTRPCRouter({
           const albumDataWithImageUrl = albumsWithCoverArt.find(
             (albumWithCoverArt) => albumWithCoverArt.last_fm_url === album.url
           );
+
           const albumCoverArtImageUrl = albumDataWithImageUrl
             ? albumDataWithImageUrl.cover_art_image_url
             : await getAlbumFromLastFmAndSaveToDatabaseAndReturnImageUrl({
@@ -99,7 +100,7 @@ const getAlbumFromLastFmAndSaveToDatabaseAndReturnImageUrl = async ({
     buildLastFmUrl({
       method: "album.getInfo",
       album: album.name,
-      artist: album.artist["#text"]
+      artist: album.artist["#text"],
     })
   );
 
@@ -114,7 +115,9 @@ const getAlbumFromLastFmAndSaveToDatabaseAndReturnImageUrl = async ({
     ? albumDetails.image[3]["#text"]
     : "";
 
-  const numberOfTracks = albumDetails.tracks?.track ? albumDetails.tracks.track.length : null;
+  const numberOfTracks = albumDetails.tracks?.track
+    ? albumDetails.tracks.track.length
+    : null;
 
   await prisma.album.create({
     data: {
@@ -146,13 +149,13 @@ const buildLastFmUrl = ({
 }) => {
   return (
     `http://ws.audioscrobbler.com/2.0/?` +
-    `method=${method}` +
+    `method=${encodeURIComponent(method)}` +
     `&user=${process.env.LASTFM_USER}` +
-    `${limit ? `&limit=${limit}` : ""}` +
-    `${from ? `&from=${from}` : ""}` +
-    `${to ? `&to=${to}` : ""}` +
-    `${album ? `&album=${album}` : ""}` +
-    `${artist ? `&artist=${artist}` : ""}` +
+    `${limit ? `&limit=${encodeURIComponent(limit)}` : ""}` +
+    `${from ? `&from=${encodeURIComponent(from)}` : ""}` +
+    `${to ? `&to=${encodeURIComponent(to)}` : ""}` +
+    `${album ? `&album=${encodeURIComponent(album)}` : ""}` +
+    `${artist ? `&artist=${encodeURIComponent(artist)}` : ""}` +
     `&api_key=${process.env.LASTFM_API_KEY}` +
     `&format=json`
   );
