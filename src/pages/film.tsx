@@ -87,7 +87,7 @@ const getFilmsByYear = (year: number | "All") => {
 };
 
 const FilmPage: NextPage = () => {
-  const supportedYears = [2023, 2022, "All"];
+  const supportedYears = getSupportedYears();
   const [selectedYear, setSelectedYear] = useState<number | "All">(
     supportedYears[0] as number
   );
@@ -117,5 +117,17 @@ const FilmPage: NextPage = () => {
     </div>
   );
 };
+
+const getSupportedYears = (): Array<number | string> => {
+  const firstSupportedYear = 2022;
+  const currentYear = new Date().getFullYear();
+  const supportedYears = [];
+  for (let year = currentYear; year >= firstSupportedYear; year--) {
+    supportedYears.push(year);
+  }
+  supportedYears.push("All");
+
+  return supportedYears;
+}; 
 
 export default FilmPage;
