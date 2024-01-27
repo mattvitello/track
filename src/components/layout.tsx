@@ -9,7 +9,6 @@ export const PageLayout = (props: PropsWithChildren) => {
     <main className="container:none min-h-screen px-8 pt-12 md:grid-cols-12 md:px-16">
       <div className="min-h-16 inline">
           <p className="text-center md:text-left">
-            <Link href="/" className="inline-block">
               <Image
                 src="/track-logo.png"
                 alt="Logo"
@@ -17,7 +16,6 @@ export const PageLayout = (props: PropsWithChildren) => {
                 height={0}
                 className="-mt-30px"
               />
-            </Link>
           </p>
       </div>
       <div className="pt-8 md:float-right md:-mt-8 md:pt-0">

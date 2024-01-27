@@ -10,8 +10,8 @@ const Sidebar = ({}) => {
   const router = useRouter();
   const navItems: NavItem[] = [
     {
-      label: "Film",
-      url: "/film",
+      label: "Movies",
+      url: "/movies",
     },
     {
       label: "Music",
