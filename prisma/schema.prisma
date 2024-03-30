@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
     relationMode = "prisma"
 }
@@ -32,7 +32,7 @@ model album {
     artist              String
     last_fm_url         String  @unique
     cover_art_image_url String? @db.Text
-    number_of_tracks    Int?    @db.Int
+    number_of_tracks    Int?    
     created_at          DateTime @default(now())
     updated_at          DateTime @updatedAt
 }
