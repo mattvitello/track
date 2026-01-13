@@ -48,12 +48,15 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const isAuthorizedWithZapier = (zapierAccessToken === process.env.ZAPIER_ACCESS_TOKEN);
   
   // Get client IP from various headers (supporting proxies/load balancers)
-  // Vercel uses x-forwarded-for, but the real client IP is in x-real-ip or x-vercel-forwarded-for
+  // Priority: Cloudflare > Vercel > x-forwarded-for > x-real-ip > socket
+  const cfConnectingIp = opts.req.headers["cf-connecting-ip"]; // Cloudflare's real client IP
   const vercelForwarded = opts.req.headers["x-vercel-forwarded-for"];
   const forwarded = opts.req.headers["x-forwarded-for"];
   const realIp = opts.req.headers["x-real-ip"];
   
-  let clientIp = typeof vercelForwarded === "string"
+  let clientIp = typeof cfConnectingIp === "string"
+    ? cfConnectingIp
+    : typeof vercelForwarded === "string"
     ? vercelForwarded.split(",")[0]?.trim() ?? ""
     : typeof forwarded === "string" 
     ? forwarded.split(",")[0]?.trim() ?? ""
