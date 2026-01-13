@@ -48,9 +48,14 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const isAuthorizedWithZapier = (zapierAccessToken === process.env.ZAPIER_ACCESS_TOKEN);
   
   // Get client IP from various headers (supporting proxies/load balancers)
+  // Vercel uses x-forwarded-for, but the real client IP is in x-real-ip or x-vercel-forwarded-for
+  const vercelForwarded = opts.req.headers["x-vercel-forwarded-for"];
   const forwarded = opts.req.headers["x-forwarded-for"];
   const realIp = opts.req.headers["x-real-ip"];
-  let clientIp = typeof forwarded === "string" 
+  
+  let clientIp = typeof vercelForwarded === "string"
+    ? vercelForwarded.split(",")[0]?.trim() ?? ""
+    : typeof forwarded === "string" 
     ? forwarded.split(",")[0]?.trim() ?? ""
     : typeof realIp === "string"
     ? realIp
@@ -68,6 +73,9 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   // Check if IP is in allowed list
   const allowedIps = process.env.ALLOWED_IPS?.split(",").map(ip => ip.trim()) ?? [];
   const isAllowedIp = allowedIps.includes(clientIp) || allowedIps.length === 0;
+  
+  // Debug logging - remove after confirming it works
+  console.log("Client IP:", clientIp, "Allowed:", isAllowedIp);
   
   return { ...createInnerTRPCContext({}), isAuthorizedWithZapier, clientIp, isAllowedIp };
 };
