@@ -46,7 +46,30 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
 export const createTRPCContext = (opts: CreateNextContextOptions) => {
   const zapierAccessToken = opts.req.headers[`${process.env.ZAPIER_ACCESS_TOKEN_HEADER}`] as string;
   const isAuthorizedWithZapier = (zapierAccessToken === process.env.ZAPIER_ACCESS_TOKEN);
-  return { ...createInnerTRPCContext({}), isAuthorizedWithZapier };
+  
+  // Get client IP from various headers (supporting proxies/load balancers)
+  const forwarded = opts.req.headers["x-forwarded-for"];
+  const realIp = opts.req.headers["x-real-ip"];
+  let clientIp = typeof forwarded === "string" 
+    ? forwarded.split(",")[0]?.trim() ?? ""
+    : typeof realIp === "string"
+    ? realIp
+    : opts.req.socket.remoteAddress ?? "";
+  
+  // Normalize IPv6 localhost to IPv4
+  if (clientIp === "::1" || clientIp === "::ffff:127.0.0.1") {
+    clientIp = "127.0.0.1";
+  }
+  // Strip IPv6 prefix if present (e.g., "::ffff:192.168.1.1" -> "192.168.1.1")
+  if (clientIp.startsWith("::ffff:")) {
+    clientIp = clientIp.substring(7);
+  }
+  
+  // Check if IP is in allowed list
+  const allowedIps = process.env.ALLOWED_IPS?.split(",").map(ip => ip.trim()) ?? [];
+  const isAllowedIp = allowedIps.includes(clientIp) || allowedIps.length === 0;
+  
+  return { ...createInnerTRPCContext({}), isAuthorizedWithZapier, clientIp, isAllowedIp };
 };
 
 /**
@@ -100,7 +123,22 @@ const enforceUserIsAuthedWithZapier = t.middleware(({ ctx, next }) => {
   });
 });
 
+const enforceAllowedIp = t.middleware(({ ctx, next }) => {
+  if (!ctx.isAllowedIp) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "IP not allowed" })
+  }
+
+  return next({
+    ctx: {},
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  */
 export const protectedZapierAuthenticatedProcedure = t.procedure.use(enforceUserIsAuthedWithZapier);
+
+/**
+ * IP-protected procedure - only allows requests from IPs in ALLOWED_IPS env var
+ */
+export const protectedIpProcedure = t.procedure.use(enforceAllowedIp);

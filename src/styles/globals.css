@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-.bg-highlight, .hover\:bg-highlight:hover {
+.bg-highlight {
   background: #ff6;
+}
+
+@media (hover: hover) {
+  .hover\:bg-highlight:hover {
+    background: #ff6;
+  }
 }
 
 .text-15 {

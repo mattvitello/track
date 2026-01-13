@@ -17,6 +17,10 @@ const Sidebar = ({}) => {
       label: "Music",
       url: "/music",
     },
+    {
+      label: "Cooking",
+      url: "/cooking",
+    },
   ];
 
   const isActive = (url: string) => {

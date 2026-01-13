@@ -36,3 +36,15 @@ model album {
     created_at          DateTime @default(now())
     updated_at          DateTime @updatedAt
 }
+
+model cooking {
+    id                String   @id @default(cuid())
+    name              String
+    image_url         String?  @db.Text
+    rating            Decimal
+    recipe_url        String?  @db.Text
+    notes             String?  @db.Text
+    cooked_at         DateTime
+    created_at        DateTime @default(now())
+    updated_at        DateTime @updatedAt
+}

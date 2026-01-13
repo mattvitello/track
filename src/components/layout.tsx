@@ -19,14 +19,14 @@ export const PageLayout = (props: PropsWithChildren) => {
           </p>
       </div>
       <div className="pt-8 md:float-right md:-mt-8 md:pt-0">
-        <ul>
+        {/* <ul>
           <li>
             <Link href="https://mattvitello.com/" className="hover:bg-highlight text-sm">
               <FaLink className="inline mr-1 text-xs"/>
               mattvitello.com
             </Link>
           </li>
-        </ul>
+        </ul> */}
       </div>
       <div className="grid grid-cols-12 gap-4 pt-8 md:pt-8">
         <div className="col-span-12 sm:col-span-12 md:col-span-2 md:pt-14">

@@ -57,7 +57,6 @@ const MusicPage: NextPage = () => {
               }`}
             >
               <button
-                className={`${year === selectedYear ? "underline" : ""}`}
                 onClick={() => setSelectedYear(year as number | "All")}
               >
                 {year}
