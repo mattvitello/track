@@ -1,8 +1,6 @@
 import type { PropsWithChildren } from "react";
-import { FaLink } from "react-icons/fa"
 import Image from "next/image";
 import Sidebar from "~/components/sidebar";
-import Link from "next/link";
 
 export const PageLayout = (props: PropsWithChildren) => {
   return (

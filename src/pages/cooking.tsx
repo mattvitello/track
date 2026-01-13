@@ -206,10 +206,10 @@ const AddEntryForm = ({ onClose, onSuccess }: AddEntryFormProps) => {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Image</label>
-            {imagePreview || imageUrl ? (
+            {imagePreview ?? imageUrl ? (
               <div className="relative">
                 <Image
-                  src={imagePreview || imageUrl}
+                  src={imagePreview ?? imageUrl}
                   alt="Preview"
                   width={200}
                   height={200}
