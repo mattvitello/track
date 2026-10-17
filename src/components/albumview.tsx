@@ -1,11 +1,16 @@
 import Image from "next/image";
 import type { RouterOutputs } from "~/utils/api";
 import Link from "next/link";
+import { useState } from "react";
 
 type Album = RouterOutputs["music"]["getMostListenedToAlbums"][0];
 export const AlbumView = (props: Album) => {
   const album = props;
-  const albumCoverUrl = album.imageUrl ? album.imageUrl : "/empty-poster.png";
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  const albumCoverUrl =
+    album.imageUrl && failedSource !== album.imageUrl
+      ? album.imageUrl
+      : "/empty-poster.png";
 
   return (
     <div key={album.url} className="relative col-span-4 sm:col-span-3">
@@ -13,10 +18,14 @@ export const AlbumView = (props: Album) => {
         <Image
           src={albumCoverUrl}
           alt="Album cover"
+          unoptimized
+          onError={() => setFailedSource(album.imageUrl)}
           sizes="100vw"
           style={{
             width: "100%",
             height: "auto",
+            aspectRatio: "1 / 1",
+            objectFit: "cover",
           }}
           width={200}
           height={200}

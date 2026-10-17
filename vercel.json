@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "src/pages/api/music/cover/*.ts": {
+      "maxDuration": 30
+    }
+  }
+}
