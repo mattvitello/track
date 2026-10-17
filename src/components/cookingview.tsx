@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { RouterOutputs } from "~/utils/api";
+import { cookingImageLoader, isCloudinaryImage } from "~/utils/images";
 
 type CookingEntry = RouterOutputs["cooking"]["getAll"][0];
 
@@ -19,8 +20,9 @@ export const CookingView = (props: CookingViewProps) => {
     >
       <Image
         src={imageUrl}
+        loader={isCloudinaryImage(imageUrl) ? cookingImageLoader : undefined}
         alt={entry.name}
-        sizes="100vw"
+        sizes="(min-width: 1280px) 208px, (min-width: 1024px) 16vw, (min-width: 768px) 22vw, (min-width: 640px) 30vw, 45vw"
         style={{
           width: "100%",
           height: "auto",

@@ -1,3 +1,5 @@
+import { getStaticCatalogProps } from "~/server/static-catalog";
+import { getCatalogYears, type CatalogPageProps } from "~/utils/catalog";
 import { type NextPage } from "next/types";
 import { useState, useCallback, useMemo } from "react";
 import { LoadingPage } from "~/components/loading";
@@ -442,10 +444,10 @@ const getCookingByYear = (year: number | "All") => {
   }
 };
 
-const CookingPage: NextPage = () => {
-  const supportedYears = getSupportedYears();
+const CookingPage: NextPage<CatalogPageProps> = ({ initialYear }) => {
+  const supportedYears = getCatalogYears(2025, initialYear);
   const [selectedYear, setSelectedYear] = useState<number | "All">(
-    supportedYears[0] as number
+    initialYear
   );
   const [showAddForm, setShowAddForm] = useState(false);
   const [refetchKey, setRefetchKey] = useState(0);
@@ -481,7 +483,7 @@ const CookingPage: NextPage = () => {
                 }`}
               >
                 <button
-                  onClick={() => setSelectedYear(year as number | "All")}
+                  onClick={() => setSelectedYear(year)}
                 >
                   {year}
                 </button>
@@ -502,16 +504,6 @@ const CookingPage: NextPage = () => {
   );
 };
 
-const getSupportedYears = (): Array<number | string> => {
-  const firstSupportedYear = 2025;
-  const currentYear = new Date().getFullYear();
-  const supportedYears = [];
-  for (let year = currentYear; year >= firstSupportedYear; year--) {
-    supportedYears.push(year);
-  }
-  supportedYears.push("All");
-
-  return supportedYears;
-};
+export const getStaticProps = () => getStaticCatalogProps("cooking");
 
 export default CookingPage;

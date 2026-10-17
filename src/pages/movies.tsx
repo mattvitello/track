@@ -1,3 +1,5 @@
+import { getStaticCatalogProps } from "~/server/static-catalog";
+import { getCatalogYears, type CatalogPageProps } from "~/utils/catalog";
 import { type NextPage } from "next";
 import { useMemo, useState } from "react";
 import { FilmView } from "~/components/filmview";
@@ -86,10 +88,10 @@ const getFilmsByYear = (year: number | "All") => {
   }
 };
 
-const FilmPage: NextPage = () => {
-  const supportedYears = getSupportedYears();
+const FilmPage: NextPage<CatalogPageProps> = ({ initialYear }) => {
+  const supportedYears = getCatalogYears(2022, initialYear);
   const [selectedYear, setSelectedYear] = useState<number | "All">(
-    supportedYears[0] as number
+    initialYear
   );
 
   return (
@@ -104,7 +106,7 @@ const FilmPage: NextPage = () => {
               }`}
             >
               <button
-                onClick={() => setSelectedYear(year as number | "All")}
+                onClick={() => setSelectedYear(year)}
               >
                 {year}
               </button>
@@ -117,16 +119,6 @@ const FilmPage: NextPage = () => {
   );
 };
 
-const getSupportedYears = (): Array<number | string> => {
-  const firstSupportedYear = 2022;
-  const currentYear = new Date().getFullYear();
-  const supportedYears = [];
-  for (let year = currentYear; year >= firstSupportedYear; year--) {
-    supportedYears.push(year);
-  }
-  supportedYears.push("All");
-
-  return supportedYears;
-}; 
+export const getStaticProps = () => getStaticCatalogProps("movies");
 
 export default FilmPage;

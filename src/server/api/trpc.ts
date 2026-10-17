@@ -80,7 +80,8 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   // Debug logging - remove after confirming it works
   console.log("Client IP:", clientIp, "Allowed:", isAllowedIp);
   
-  return { ...createInnerTRPCContext({}), isAuthorizedWithZapier, clientIp, isAllowedIp };
+  const revalidateCatalog = (path: string) => opts.res.revalidate(path);
+  return { ...createInnerTRPCContext({}), isAuthorizedWithZapier, clientIp, isAllowedIp, revalidateCatalog };
 };
 
 /**

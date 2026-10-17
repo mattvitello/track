@@ -9,6 +9,7 @@ import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
 import { type AppRouter } from "~/server/api/root";
+import { createQueryClient } from "~/utils/query-cache";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -42,14 +43,7 @@ export const api = createTRPCNext<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
-      queryClientConfig: {
-        defaultOptions: {
-          queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
-            cacheTime: 1000 * 60 * 10, // 10 minutes
-          },
-        },
-      }
+      queryClient: createQueryClient(),
     };
   },
   /**

@@ -18,6 +18,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
+    minimumCacheTTL: 60 * 60 * 24 * 7,
     domains: ['ltrbxd.com', 's.ltrbxd.com', 'a.ltrbxd.com', 'fastly.net', 'lastfm.freetls.fastly.net', 'res.cloudinary.com'],
   },
 };

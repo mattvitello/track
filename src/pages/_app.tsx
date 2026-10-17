@@ -3,8 +3,14 @@ import { api } from "~/utils/api";
 import Head from "next/head";
 import { PageLayout } from "~/components/layout";
 import "~/styles/globals.css";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { restoreQueryClient } from "~/utils/query-cache";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  const queryClient = useQueryClient();
+  useEffect(() => restoreQueryClient(queryClient), [queryClient]);
+
   return (
     <>
       <Head>

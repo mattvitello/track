@@ -4,6 +4,8 @@ import {
   publicProcedure,
   protectedZapierAuthenticatedProcedure,
 } from "~/server/api/trpc";
+import { cachedQuery, invalidateQueries } from "~/server/query-cache";
+import { revalidateCatalog } from "~/server/revalidate-catalog";
 
 export const movieRouter = createTRPCRouter({
   getByLetterboxdId: publicProcedure
@@ -32,40 +34,44 @@ export const movieRouter = createTRPCRouter({
 
   getAllByMinimumRating: publicProcedure
     .input(z.object({ rating: z.number() }))
-    .query(({ ctx, input }) => {
-      return ctx.prisma.movie.findMany({
-        where: {
-          my_rating: {
-            gte: input.rating,
+    .query(({ ctx, input }) =>
+      cachedQuery(`movie:rating:${input.rating}`, () =>
+        ctx.prisma.movie.findMany({
+          where: {
+            my_rating: {
+              gte: input.rating,
+            },
           },
-        },
-        orderBy: {
-          my_rating: 'desc'
-        }
-      });
-    }),
+          orderBy: {
+            my_rating: "desc",
+          },
+        })
+      )
+    ),
 
-    getByMinimumRatingAndWatchedYear: publicProcedure
+  getByMinimumRatingAndWatchedYear: publicProcedure
     .input(z.object({ rating: z.number(), year: z.number() }))
-    .query(({ ctx, input }) => {
-      const startDate = new Date(`${input.year}-01-01T00:00:00Z`);
-      const endDate = new Date(`${input.year + 1}-01-01T00:00:00Z`);
+    .query(({ ctx, input }) =>
+      cachedQuery(`movie:rating:${input.rating}:year:${input.year}`, () => {
+        const startDate = new Date(`${input.year}-01-01T00:00:00Z`);
+        const endDate = new Date(`${input.year + 1}-01-01T00:00:00Z`);
 
-      return ctx.prisma.movie.findMany({
-        where: {
-          my_rating: {
-            gte: input.rating,
+        return ctx.prisma.movie.findMany({
+          where: {
+            my_rating: {
+              gte: input.rating,
+            },
+            watched_at: {
+              gte: startDate,
+              lt: endDate,
+            },
           },
-          watched_at: {
-            gte: startDate,
-            lt: endDate,
-          }
-        },
-        orderBy: {
-          my_rating: 'desc'
-        }
-      });
-    }),
+          orderBy: {
+            my_rating: "desc",
+          },
+        });
+      })
+    ),
 
   create: protectedZapierAuthenticatedProcedure
     .input(
@@ -79,8 +85,8 @@ export const movieRouter = createTRPCRouter({
         letterboxdId: z.string(),
       })
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.movie.create({
+    .query(async ({ ctx, input }) => {
+      const movie = await ctx.prisma.movie.create({
         data: {
           title: input.title,
           my_rating: input.myRating,
@@ -92,6 +98,9 @@ export const movieRouter = createTRPCRouter({
           letterboxd_id: input.letterboxdId,
         },
       });
+      invalidateQueries("movie:");
+      await revalidateCatalog(ctx, "movies");
+      return movie;
     }),
 
   update: protectedZapierAuthenticatedProcedure
@@ -101,8 +110,8 @@ export const movieRouter = createTRPCRouter({
         myRating: z.number().nullable(),
       })
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.movie.update({
+    .query(async ({ ctx, input }) => {
+      const movie = await ctx.prisma.movie.update({
         where: {
           id: input.id,
         },
@@ -110,5 +119,8 @@ export const movieRouter = createTRPCRouter({
           my_rating: input.myRating,
         },
       });
+      invalidateQueries("movie:");
+      await revalidateCatalog(ctx, "movies");
+      return movie;
     }),
 });

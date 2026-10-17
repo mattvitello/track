@@ -1,3 +1,5 @@
+import { getStaticCatalogProps } from "~/server/static-catalog";
+import { getCatalogYears, type CatalogPageProps } from "~/utils/catalog";
 import { type NextPage } from "next/types";
 import { useState } from "react";
 import { LoadingPage } from "~/components/loading";
@@ -39,10 +41,10 @@ const getAlbumsByYear = (year: number | "All") => {
   }
 };
 
-const MusicPage: NextPage = () => {
-  const supportedYears = getSupportedYears();
+const MusicPage: NextPage<CatalogPageProps> = ({ initialYear }) => {
+  const supportedYears = getCatalogYears(2022, initialYear);
   const [selectedYear, setSelectedYear] = useState<number | "All">(
-    supportedYears[0] as number
+    initialYear
   );
 
   return (
@@ -57,7 +59,7 @@ const MusicPage: NextPage = () => {
               }`}
             >
               <button
-                onClick={() => setSelectedYear(year as number | "All")}
+                onClick={() => setSelectedYear(year)}
               >
                 {year}
               </button>
@@ -70,16 +72,6 @@ const MusicPage: NextPage = () => {
   );
 };
 
-const getSupportedYears = (): Array<number | string> => {
-  const firstSupportedYear = 2022;
-  const currentYear = new Date().getFullYear();
-  const supportedYears = [];
-  for (let year = currentYear; year >= firstSupportedYear; year--) {
-    supportedYears.push(year);
-  }
-  supportedYears.push("All");
-
-  return supportedYears;
-}; 
+export const getStaticProps = () => getStaticCatalogProps("music");
 
 export default MusicPage;

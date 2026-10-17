@@ -16,7 +16,8 @@ export const FilmView = (props: Film) => {
           src={posterImageUrl}
           alt="Movie Poster"
           width={130}
-          height={0}
+          height={195}
+          sizes="130px"
           className="-mt-5"
         />
       </Link>
