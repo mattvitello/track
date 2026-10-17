@@ -106,3 +106,18 @@ not exercise production ISR caching. With Chrome's cache disabled and API reques
 blocked, each default list should still render from its HTML. Unblock the API to
 check year filters and All. Check Cooking at desktop/mobile widths for thumbnail
 requests. The normal Add permission check remains client-specific.
+
+## Deployment bundle check
+
+`npm run build` also runs `npm run check:bundle`. It copies only each API
+function's traced dependencies to an isolated temporary directory, then imports
+Sharp through both ESM and CommonJS and converts a tiny image to WebP. This catches
+missing runtime files that a normal local build with complete `node_modules` can
+hide. The fixture excludes `.env` and is deleted after the check.
+
+Next.js 13 needs explicit tracing includes for the complete Sharp and `@img`
+runtimes. The route groups intentionally use distinct glob strings: this Next.js
+version caches include paths relative to the first matching route directory, so
+reusing one include glob across different directory depths produces broken paths.
+Sharp is loaded only when converting a downloaded cover, keeping image processing
+out of chart and permission API startup.

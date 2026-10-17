@@ -1,5 +1,4 @@
 import axios from "axios";
-import sharp from "sharp";
 import { type PrismaClient, type album } from "@prisma/client";
 import { type AlbumInfoResponse } from "~/server/api/models/albuminforesponse";
 import { buildLastFmUrl } from "~/server/music/lastfm";
@@ -114,6 +113,7 @@ const downloadCover = async (
     });
     const input = Buffer.from(response.data);
     if (!imageContentType(input)) return null;
+    const { default: sharp } = await import("sharp");
     const bytes = (await sharp(input, {
       limitInputPixels: 1024 * 1024,
       pages: 1,
